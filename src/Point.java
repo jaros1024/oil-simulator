@@ -7,21 +7,21 @@ public class Point {
 	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306)};
 
 	private ArrayList<Point> neighbors;
-	private int currentState;
-	private int nextState;
-	private int numStates = 6;
+
 
 	// 0 - NO OIL
 	// 10 - MOST OIL
 	private double oilLevel = 0;
+	private double nextOilLevel;
+	private double initialState = 10;
 
 	// 0 - water
     // 1 - land
 	private int type = 0;
 	
 	public Point() {
-		currentState = 0;
-		nextState = 0;
+		oilLevel = 0;
+		nextOilLevel = 0;
 		neighbors = new ArrayList<Point>();
 	}
 
@@ -34,51 +34,31 @@ public class Point {
 	}
 
 	public void clicked() {
-		oilLevel = 10;
+		oilLevel = initialState;
 	}
 	
-	public int getState() {
-		return currentState;
+	public double getState() {
+		return oilLevel;
 	}
 
 	public void calculateNewState() {
-		// TODO obliczenie nowego poziomu ropy
-		int activeNeighbors = countActiveNeighbors();
-
-		//for alive cell
-		if(getState() > 0){
-			if(activeNeighbors == 2 || activeNeighbors == 3)
-				nextState = 1;
-			else
-				nextState = 0;
+		float sum = 0;
+		for (Point item: neighbors) {
+			sum += item.getState();
 		}
-		//for dead cell
-		else {
-			if(activeNeighbors == 3)
-				nextState = 1;
-			else
-				nextState = 0;
-		}
-
+		nextOilLevel = (sum + oilLevel)/9;
+		//if (nextState < 0.5) nextState = 0;
 	}
 
 	// prawdopodobnie tutaj trzeba zmienić state na oilLevel
 	public void changeState() {
-		currentState = nextState;
+		oilLevel = nextOilLevel;
 	}
 	
 	public void addNeighbor(Point nei) {
 		neighbors.add(nei);
 	}
-	
-	public int countActiveNeighbors(){
-		int counter = 0;
-		for(Point p : neighbors){
-			if(p.getState() > 0)
-				counter++;
-		}
-		return counter;
-	}
+
 
 	public int countNeighbors(){
 		return neighbors.size();
@@ -92,7 +72,7 @@ public class Point {
 				null);
 
 		float b = hsb[2];
-		b = b-((float)oilLevel/10)*b;
+		b = b -((float)oilLevel/10)*b;
 		return Color.getHSBColor(hsb[0], hsb[1], b);
 	}
 }
