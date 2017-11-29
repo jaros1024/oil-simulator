@@ -4,25 +4,26 @@ import java.util.ArrayList;
 public class Point {
 
 	public static final Point DEAD_POINT = new Point();
-	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306)};
+	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306), new Color(0x762600)};
 
-	private ArrayList<Point> neighbors;
-
+	private Point [] neighbors;
+	private int neighborsCount;
 
 	// 0 - NO OIL
 	// 10 - MOST OIL
 	private double oilLevel = 0;
 	private double nextOilLevel;
-	private double initialState = 10;
 
 	// 0 - water
     // 1 - land
+	// 2 - oil
 	private int type = 0;
 	
 	public Point() {
 		oilLevel = 0;
 		nextOilLevel = 0;
-		neighbors = new ArrayList<Point>();
+		neighborsCount = 0;
+		neighbors = new Point[4];
 	}
 
 	public void setOilLevel(double oilLevel) {
@@ -34,7 +35,7 @@ public class Point {
 	}
 
 	public void clicked() {
-		oilLevel = initialState;
+		oilLevel = 10;
 	}
 	
 	public double getState() {
@@ -42,12 +43,36 @@ public class Point {
 	}
 
 	public void calculateNewState() {
+		calculate1();
+	}
+
+	public void calculate1(){
 		float sum = 0;
 		for (Point item: neighbors) {
-			sum += item.getState();
+			sum += 2*item.getState();
 		}
-		nextOilLevel = (sum + oilLevel)/9;
-		//if (nextState < 0.5) nextState = 0;
+		if(type == 1){
+			nextOilLevel =  (4*oilLevel + sum/2)/8;
+		} else {
+			nextOilLevel = (sum)/8;
+		}
+
+	}
+
+	public void calculate2() {
+		double sum = 0;
+		if (type == 1) {
+			for (Point item : neighbors) {
+				sum += item.getState();
+			}
+			nextOilLevel = (4 * oilLevel + sum) / 8;
+		} else {
+			sum = 2 * neighbors[0].getState() +
+					neighbors[1].getState() + neighbors[2].getState() +
+					2 * neighbors[3].getState();
+			nextOilLevel = sum/6;
+		}
+		if (nextOilLevel < 0.1) nextOilLevel = 0.1;
 	}
 
 	// prawdopodobnie tutaj trzeba zmienić state na oilLevel
@@ -56,12 +81,13 @@ public class Point {
 	}
 	
 	public void addNeighbor(Point nei) {
-		neighbors.add(nei);
+		neighbors[neighborsCount] = nei;
+		neighborsCount ++;
 	}
 
 
 	public int countNeighbors(){
-		return neighbors.size();
+		return neighborsCount;
 	}
 
 	public Color getColor(){

@@ -83,32 +83,34 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		this.repaint();
 	}
 
-	private void initialize() {
-		points = loadPointsFromImage();
+    private void initialize() {
+	    Point tmp = new Point();
+        points = loadPointsFromImage();
 
-		for (int x = 0; x < points.length; ++x) {
-			for (int y = 0; y < points[x].length; ++y) {
-				for(int i = (x-1); i<=(x+1); i++){
-					for(int j = (y-1); j<=(y+1); j++){
-						if(i == x && j == y)
-							continue;
+        for (int x = 0; x < points.length; ++x) {
+            for (int y = 0; y < points[x].length; ++y) {
+                for(int i = (x-1); i<=(x+1); i++){
+                    for(int j = (y-1); j<=(y+1); j++){
+                        try {
+                            if((i == x && j==y) || (Math.abs(i-x) + Math.abs(j-y) == 2)) continue;
+                            tmp = points[i][j];
+                            points[x][y].addNeighbor(tmp);
+                        }
+                        catch(ArrayIndexOutOfBoundsException e){
+                            tmp = Point.DEAD_POINT;
+                            points[x][y].addNeighbor(tmp);
+                        }
 
-						try {
-							points[x][y].addNeighbor(points[i][j]);
-						}
-						catch(ArrayIndexOutOfBoundsException e){
-							points[x][y].addNeighbor(Point.DEAD_POINT);
-						}
-					}
-				}
+                    }
+                }
 
-				int neighborCount = points[x][y].countNeighbors();
-				if(neighborCount != 8)
-					System.out.println("Error! Incorrect number of neighbors!");
-
-			}
-		}
-	}
+                int neighborCount = points[x][y].countNeighbors();
+                if(neighborCount != 4) {
+                    System.out.println("Error! Incorrect number of neighbors!" + neighborCount);
+                }
+            }
+        }
+    }
 
 	private void drawPoints(Graphics g) {
 		for (int x = 0; x < points.length; ++x) {
