@@ -14,6 +14,8 @@ public class Point {
 	private double oilLevel = 0;
 	private double nextOilLevel;
 
+	private double maxOil = 20;
+
 	// 0 - water
     // 1 - land
 
@@ -35,7 +37,7 @@ public class Point {
 	}
 
 	public void clicked() {
-		oilLevel = 10;
+		oilLevel = maxOil;
 	}
 	
 	public double getState() {
@@ -43,7 +45,7 @@ public class Point {
 	}
 
 	public void calculateNewState() {
-		calculate1();
+		calculate2();
 	}
 
 	public void calculate1(){
@@ -61,18 +63,21 @@ public class Point {
 
 	public void calculate2() {
 		double sum = 0;
+		int a = 2;
+		int b = 150;
 		if (type == 1) {
 			for (Point item : neighbors) {
 				sum += item.getState();
 			}
-			nextOilLevel = (4 * oilLevel + sum) / 8;
+			nextOilLevel = (b * oilLevel + sum) / (b+4);
 		} else {
-			sum = 2 * neighbors[0].getState() +
-					neighbors[1].getState() + neighbors[2].getState() +
-					2 * neighbors[3].getState();
-			nextOilLevel = sum/6;
+			sum = a * neighbors[0].getState() +
+					a * neighbors[1].getState() + 5 * a * neighbors[2].getState() +
+					a * neighbors[3].getState();
+			sum += oilLevel;
+					nextOilLevel = sum/(a*4 + 9);
 		}
-		if (nextOilLevel < 0.1) nextOilLevel = 0.1;
+		if (nextOilLevel < 0.01) nextOilLevel = 0;
 	}
 
 	// prawdopodobnie tutaj trzeba zmienić state na oilLevel
@@ -102,7 +107,7 @@ public class Point {
 				null);
 
 		float b = hsb[2];
-		b = b -((float)oilLevel/10)*b;
+		b -= (oilLevel / maxOil) * b;
 		return Color.getHSBColor(hsb[0], hsb[1], b);
 	}
 }
