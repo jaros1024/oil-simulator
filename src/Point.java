@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Point {
 
 	public static final Point DEAD_POINT = new Point();
-	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306), new Color(0x762600)};
+	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306), new Color(0xff4907)};
 
 	private Point [] neighbors;
 	private int neighborsCount;
@@ -16,7 +16,7 @@ public class Point {
 
 	// 0 - water
     // 1 - land
-	// 2 - oil
+
 	private int type = 0;
 	
 	public Point() {
@@ -91,10 +91,14 @@ public class Point {
 	}
 
 	public Color getColor(){
+		if(oilLevel == 0) {
+			return colors[type];
+		}
+
 		float[] hsb = Color.RGBtoHSB(
-				colors[type].getRed(),
-				colors[type].getGreen(),
-				colors[type].getBlue(),
+				colors[2].getRed(),
+				colors[2].getGreen(),
+				colors[2].getBlue(),
 				null);
 
 		float b = hsb[2];
