@@ -1,10 +1,11 @@
 import java.awt.*;
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
 
 public class Point {
 
 	public static final Point DEAD_POINT = new Point();
 	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306), new Color(0xff4907)};
+	private static final double MAX_OIL = 20;
 
 	private Point [] neighbors;
 	private int neighborsCount;
@@ -14,11 +15,8 @@ public class Point {
 	private double oilLevel = 0;
 	private double nextOilLevel;
 
-	private double maxOil = 20;
-
 	// 0 - water
     // 1 - land
-
 	private int type = 0;
 	
 	public Point() {
@@ -37,7 +35,7 @@ public class Point {
 	}
 
 	public void clicked() {
-		oilLevel = maxOil;
+		oilLevel = MAX_OIL;
 	}
 	
 	public double getState() {
@@ -64,7 +62,7 @@ public class Point {
 	public void calculate2() {
 		double sum = 0;
 		int a = 2;
-		int b = 100;
+		int b = 50;
 		if (type == 1) {
 			for (Point item : neighbors) {
 				sum += item.getState();
@@ -80,7 +78,6 @@ public class Point {
 		if (nextOilLevel < 0.01) nextOilLevel = 0;
 	}
 
-	// prawdopodobnie tutaj trzeba zmienić state na oilLevel
 	public void changeState() {
 		oilLevel = nextOilLevel;
 	}
@@ -99,6 +96,9 @@ public class Point {
 		if(oilLevel == 0) {
 			return colors[type];
 		}
+		if(type == 1 && oilLevel != MAX_OIL){
+			return getMixedColor(colors[2], colors[1], oilLevel);
+		}
 
 		float[] hsb = Color.RGBtoHSB(
 				colors[2].getRed(),
@@ -107,7 +107,22 @@ public class Point {
 				null);
 
 		float b = hsb[2];
-		b -= (oilLevel / maxOil) * b;
+		b -= (oilLevel / MAX_OIL) * b;
 		return Color.getHSBColor(hsb[0], hsb[1], b);
+	}
+
+	private Color getMixedColor(Color c1, Color c2, double p){
+		p = p/MAX_OIL;
+
+		int newRed = mixColor(c1.getRed(), c2.getRed(), p);
+		int newGreen = mixColor(c1.getGreen(), c2.getGreen(), p);
+		int newBlue = mixColor(c1.getBlue(), c2.getBlue(), p);
+
+		return new Color(newRed, newGreen, newBlue);
+	}
+
+	private int mixColor(double v1, double v2, double p){
+		Double newValue = (v1 * p) + (v2 * (1-p));
+		return (int)Math.floor(newValue);
 	}
 }
