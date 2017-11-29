@@ -64,7 +64,7 @@ public class Point {
 	public void calculate2() {
 		double sum = 0;
 		int a = 2;
-		int b = 150;
+		int b = 100;
 		if (type == 1) {
 			for (Point item : neighbors) {
 				sum += item.getState();
@@ -72,10 +72,10 @@ public class Point {
 			nextOilLevel = (b * oilLevel + sum) / (b+4);
 		} else {
 			sum = a * neighbors[0].getState() +
-					a * neighbors[1].getState() + 5 * a * neighbors[2].getState() +
+					a * neighbors[1].getState() + a * neighbors[2].getState() +
 					a * neighbors[3].getState();
 			sum += oilLevel;
-					nextOilLevel = sum/(a*4 + 9);
+					nextOilLevel = sum/(a*4 + 1);
 		}
 		if (nextOilLevel < 0.01) nextOilLevel = 0;
 	}
