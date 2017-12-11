@@ -1,3 +1,5 @@
+package pl.alphabyte.oilSimulator;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -5,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -21,6 +22,8 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private Board board;
 	private JButton start;
 	private JButton clear;
+	private JButton addWind;
+	private JButton addCurrent;
 	private JSlider pred;
 	private JFrame frame;
 	private int iterNum = 0;
@@ -60,11 +63,22 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		pred.addChangeListener(this);
 		pred.setValue(maxDelay - timer.getDelay());
 
+		addWind = new JButton("Add wind");
+		addWind.setActionCommand("addWind");
+		addWind.addActionListener(this);
+
+		addCurrent = new JButton("Add ocean current");
+		addCurrent.setActionCommand("addCurrent");
+		addCurrent.addActionListener(this);
+
 		buttonPanel.add(start);
 		buttonPanel.add(clear);
 		buttonPanel.add(pred);
+		buttonPanel.add(addWind);
+		buttonPanel.add(addCurrent);
 
-		board = new Board();
+		/* poniższe rzutowanie jest takie zjebane po to żeby nie musieć przerabiać nieswojego kodu, nie bijcie */
+		board = new Board( ( (Program)frame ).getImage() );
 		container.add(board, BorderLayout.CENTER);
 		container.add(buttonPanel, BorderLayout.SOUTH);
 	}
@@ -97,6 +111,12 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 				timer.stop();
 				start.setEnabled(true);
 				board.clear();
+			}
+			else if (command.equals("addWind")) {
+				board.setAddingMode(2);
+			}
+			else if (command.equals("addCurrent")) {
+				board.setAddingMode(1);
 			}
 
 		}

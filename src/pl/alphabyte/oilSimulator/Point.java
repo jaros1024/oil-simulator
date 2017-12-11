@@ -1,5 +1,6 @@
+package pl.alphabyte.oilSimulator;
+
 import java.awt.*;
-import java.nio.ByteBuffer;
 
 public class Point {
 
