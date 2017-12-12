@@ -3,9 +3,10 @@ package pl.alphabyte.oilSimulator;
 import java.awt.*;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import java.util.Vector;
 
-public class OceanCurrent {
+public class OceanCurrent implements Serializable {
     private Vector<java.awt.Point> points = new Vector<java.awt.Point>();
     private boolean finished = false;
     private java.awt.Point cursorPosition;

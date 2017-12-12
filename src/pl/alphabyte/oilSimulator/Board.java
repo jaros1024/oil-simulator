@@ -1,33 +1,34 @@
 package pl.alphabyte.oilSimulator;
 
-import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.util.Vector;
-
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Vector;
 
 /**
  * Board with Points that may be expanded (with automatic change of cell
  * number) with mouse event listener
  */
 
-public class Board extends JComponent implements MouseInputListener, ComponentListener {
-	private Point[][] points;
+public class Board extends JComponent implements MouseInputListener, Serializable {
+	private transient Point[][] points;
 	private Vector<OceanCurrent> currentVector = new Vector<OceanCurrent>();
 	private Vector<Wind> windVector = new Vector<Wind>();
 
-	private BufferedImage img;
+	private transient BoardCache cache;
+	private transient BufferedImage inputImage;
 
-	private OceanCurrent.Factory currentFactory = new OceanCurrent.Factory(this);
-	private Wind.Factory windFactory = new Wind.Factory(this);
+	private transient OceanCurrent.Factory currentFactory;
+	private transient Wind.Factory windFactory;
 
-	private BoardCache cache;
-
-	private static final int IMAGE_WATER_COLOR = -1;
+	public static final int IMAGE_WATER_COLOR = -1;
 	private static final int CLICK_RADIUS = 2;
 
 	/* LISTA TRYBÓW
@@ -38,10 +39,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	private static int addingMode = 0;
 
 	public Board(BufferedImage img) {
-		this.img = img;
-
+		inputImage = img;
 		addMouseListener(this);
-		addComponentListener(this);
 		addMouseMotionListener(this);
 		setBackground(Color.WHITE);
 		setOpaque(true);
@@ -49,28 +48,35 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		initialize();
 	}
 
-	private Point[][] loadPointsFromImage(){
-		Point[][] result = null;
-		int imgHeight = img.getHeight();
-		int imgWidth = img.getWidth();
-		result = new Point[imgHeight][imgWidth];
-		cache = new BoardCache(this, imgWidth, imgHeight);
+	private void initialize() {
+		Point tmp = new Point();
+		points = IOHelper.loadPointsFromImage(inputImage);
+		cache = new BoardCache(this, points[0].length, points.length);
+		currentFactory = new OceanCurrent.Factory(this);
+		windFactory = new Wind.Factory(this);
 
-		for(int i=0; i<imgHeight; i++){
-			for(int j=0; j<imgWidth; j++){
-				int color = img.getRGB(j, i);
+		for (int x = 0; x < points.length; ++x) {
+			for (int y = 0; y < points[x].length; ++y) {
+				for(int i = (x-1); i<=(x+1); i++){
+					for(int j = (y-1); j<=(y+1); j++){
+						try {
+							if((i == x && j==y) || (Math.abs(i-x) + Math.abs(j-y) == 2)) continue;
+							tmp = points[i][j];
+							points[x][y].addNeighbor(tmp);
+						}
+						catch(ArrayIndexOutOfBoundsException e){
+							tmp = Point.DEAD_POINT;
+							points[x][y].addNeighbor(tmp);
+						}
+					}
+				}
 
-				Point p = new Point();
-				if(color != IMAGE_WATER_COLOR) {
-					p.setType(1);
+				int neighborCount = points[x][y].countNeighbors();
+				if(neighborCount != 4) {
+					System.out.println("Error! Incorrect number of neighbors!" + neighborCount);
 				}
-				else {
-					p.setType(0);
-				}
-				result[i][j] = p;
 			}
 		}
-		return result;
 	}
 
 	// single iteration
@@ -92,35 +98,6 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				points[x][y].setOilLevel(0);
 			}
 		this.repaint();
-	}
-
-	private void initialize() {
-		Point tmp = new Point();
-		points = loadPointsFromImage();
-
-		for (int x = 0; x < points.length; ++x) {
-			for (int y = 0; y < points[x].length; ++y) {
-				for(int i = (x-1); i<=(x+1); i++){
-					for(int j = (y-1); j<=(y+1); j++){
-						try {
-							if((i == x && j==y) || (Math.abs(i-x) + Math.abs(j-y) == 2)) continue;
-							tmp = points[i][j];
-							points[x][y].addNeighbor(tmp);
-						}
-						catch(ArrayIndexOutOfBoundsException e){
-							tmp = Point.DEAD_POINT;
-							points[x][y].addNeighbor(tmp);
-						}
-
-					}
-				}
-
-				int neighborCount = points[x][y].countNeighbors();
-				if(neighborCount != 4) {
-					System.out.println("Error! Incorrect number of neighbors!" + neighborCount);
-				}
-			}
-		}
 	}
 
 	private void drawPoints(Graphics g) {
@@ -248,6 +225,17 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		}
 	}
 
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		ImageIO.write(inputImage, "png", out);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		inputImage = ImageIO.read(in);
+		initialize();
+	}
+
 	void getCacheImage(Graphics g){
 		drawAll(g);
 	}
@@ -258,18 +246,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	public void mouseEntered(MouseEvent e) {
 	}
 
-	public void componentShown(ComponentEvent e) {
-	}
-
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	public void componentHidden(ComponentEvent e) {
-	}
-
 	public void mousePressed(MouseEvent e) {
 	}
 
-	public void componentResized(ComponentEvent e) {
-	}
 }

@@ -1,18 +1,11 @@
 package pl.alphabyte.oilSimulator;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Class containing GUI: board + buttons
@@ -24,6 +17,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private JButton clear;
 	private JButton addWind;
 	private JButton addCurrent;
+	private JButton saveBtn;
 	private JSlider pred;
 	private JFrame frame;
 	private int iterNum = 0;
@@ -40,7 +34,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	/**
 	 * @param container to which GUI and board is added
 	 */
-	public void initialize(Container container) {
+	public void initialize(Container container, String serializedBoard) {
 		container.setLayout(new BorderLayout());
 		container.setSize(new Dimension(container.getWidth(), container.getHeight()));
 
@@ -71,14 +65,24 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		addCurrent.setActionCommand("addCurrent");
 		addCurrent.addActionListener(this);
 
+		saveBtn = new JButton("Save board to file");
+		saveBtn.setActionCommand("saveBtn");
+		saveBtn.addActionListener(this);
+
 		buttonPanel.add(start);
 		buttonPanel.add(clear);
 		buttonPanel.add(pred);
 		buttonPanel.add(addWind);
 		buttonPanel.add(addCurrent);
+		buttonPanel.add(saveBtn);
 
 		/* poniższe rzutowanie jest takie zjebane po to żeby nie musieć przerabiać nieswojego kodu, nie bijcie */
-		board = new Board( ( (Program)frame ).getImage() );
+		if(serializedBoard == null) {
+			board = new Board(((Program) frame).getImage());
+		}
+		else {
+			board = IOHelper.fromFile(serializedBoard);
+		}
 		container.add(board, BorderLayout.CENTER);
 		container.add(buttonPanel, BorderLayout.SOUTH);
 	}
@@ -118,7 +122,18 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 			else if (command.equals("addCurrent")) {
 				board.setAddingMode(1);
 			}
+			else if(command.equals("saveBtn")){
+				saveBoard();
+			}
 
+		}
+	}
+
+	private void saveBoard(){
+		JFileChooser fc = new JFileChooser();
+		int result = fc.showSaveDialog(this);
+		if(result == JFileChooser.APPROVE_OPTION){
+			IOHelper.toFile(board, fc.getSelectedFile().getAbsolutePath());
 		}
 	}
 

@@ -1,11 +1,8 @@
 package pl.alphabyte.oilSimulator;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class Program extends JFrame {
 
@@ -17,34 +14,56 @@ public class Program extends JFrame {
 	public Program() {
 		setTitle(WINDOW_NAME);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		String serializedBoard = null;
 
-		/*MapSelector ms = new MapSelector(this);
-		ms.initialize();
-		setContentPane(ms.panel1);
-		this.setSize(1000, 700);
+		InitialWindow iw = new InitialWindow(this);
+		iw.initialize();
+		setContentPane(iw.panel1);
+		this.setSize(640, 480);
 		this.setVisible(true);
 
 		synchronized (lock){
-			while(image == null){
-				try {
-					lock.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+			try {
+				lock.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 
 		this.setVisible(false);
-		setContentPane(new Container());*/
+		setContentPane(new Container());
 
-		try {
+		serializedBoard = iw.getFileToLoad();
+
+		if(serializedBoard == null) {
+			MapSelector ms = new MapSelector(this);
+			ms.initialize();
+			setContentPane(ms.panel1);
+			this.setSize(1000, 700);
+			this.setVisible(true);
+
+			synchronized (lock) {
+				while (image == null) {
+					try {
+						lock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			this.setVisible(false);
+			setContentPane(new Container());
+		}
+
+		/*try {
 			image = ImageIO.read(new File("map.bmp"));
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		gui = new GUI(this);
-		gui.initialize(this.getContentPane());
+		gui.initialize(this.getContentPane(), serializedBoard);
 
 		this.setSize(1024, 768);
 		setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);

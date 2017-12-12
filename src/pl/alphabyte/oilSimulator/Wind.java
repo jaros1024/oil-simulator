@@ -3,8 +3,9 @@ package pl.alphabyte.oilSimulator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 
-public class Wind {
+public class Wind implements Serializable {
     private final int x0, y0;
     private int x, y;
     private int width = 0, height = 0;
