@@ -62,6 +62,7 @@ public class Program extends JFrame {
 			e.printStackTrace();
 		}*/
 
+
 		gui = new GUI(this);
 		gui.initialize(this.getContentPane(), serializedBoard);
 

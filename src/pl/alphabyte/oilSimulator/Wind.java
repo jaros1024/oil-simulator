@@ -11,12 +11,52 @@ public class Wind implements Serializable {
     private int width = 0, height = 0;
     private Double speed;
     private Double direction;
-
+    private double[] windValueArray;
 
     public Wind(int x, int y){
         this.x = this.x0 = x;
         this.y = this.y0 = y;
+        windValueArray = new double[4];
     }
+
+    public double[] getWindValueArray() {
+        return windValueArray;
+    }
+
+    public int getX(){
+        return x;
+    }
+
+    public int getY(){
+        return y;
+    }
+
+    public int getWidth(){
+        return width;
+    }
+
+    public int getHeight(){
+        return height;
+    }
+
+
+    public void calculateWindArray(){
+
+        double directionInRadians, valX, valY;
+        for (int i = 0; i < windValueArray.length; i++){ windValueArray[i] = 0;}
+        double windPowerParam = 0.1;
+
+        directionInRadians = direction / 2 / Math.PI;
+        valX = speed*Math.cos(directionInRadians)*speed*windPowerParam;
+        valY = speed*Math.sin(directionInRadians)*speed*windPowerParam;
+
+        if(valX >= 0) windValueArray[1] = valX;
+        else windValueArray[2] = valX*(-1);
+
+        if(valY >= 0) windValueArray[3] = valY;
+        else windValueArray[0] = valY*(-1);
+    }
+
 
     public void draw(Graphics g){
         g.setColor(Color.MAGENTA);
@@ -68,6 +108,7 @@ public class Wind implements Serializable {
         public void createWind(java.awt.Point p){
             tmpWind = new Wind(p.x, p.y);
             board.repaint();
+            System.out.println(p.x + " px py " + p.y);
         }
 
         public Wind saveWind(java.awt.Point p){
@@ -77,10 +118,29 @@ public class Wind implements Serializable {
             while(!tmpWind.setDirection());
             while (!tmpWind.setSpeed());
 
+            tmpWind.calculateWindArray();
+            System.out.println(tmpWind.getX() + "   " + tmpWind.getWidth() + "     " + tmpWind.getY() + "       " + tmpWind.getHeight());
+            applyWind();
             Wind returnValue = tmpWind;
             tmpWind = null;
             board.repaint();
             return returnValue;
+        }
+
+        public void applyWind(){
+            Point tmpPoint;
+
+            for (int i = tmpWind.getX(); i < tmpWind.getX() + tmpWind.getWidth(); i++){
+                for (int j = tmpWind.getY(); j < tmpWind.getY() + tmpWind.getHeight(); j++){
+                    tmpPoint = board.getPoint(i,j);
+                    tmpPoint.modifyCalculateParams(tmpWind.getWindValueArray());
+                    board.setPoint(i,j,tmpPoint);
+                    System.out.println();
+                    System.out.println(i + "  " + j);
+                }
+            }
+
+
         }
 
         public void updateSize(java.awt.Point p){

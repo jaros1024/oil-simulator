@@ -9,6 +9,16 @@ public class Point {
 	private static final double MAX_OIL = 20;
 
 	private Point [] neighbors;
+	private double [] calculationParams;
+
+
+	/* parametry kierunkow tablica [4]
+	    0 - w dol
+        1 - prawo
+        2 - w lewo
+        3 - w dol
+    */
+
 	private int neighborsCount;
 
 	// 0 - NO OIL
@@ -25,6 +35,10 @@ public class Point {
 		nextOilLevel = 0;
 		neighborsCount = 0;
 		neighbors = new Point[4];
+		calculationParams = new double[4];
+		for (int i = 0; i < calculationParams.length; i++) {
+			calculationParams[i] = 1;
+        }
 	}
 
 	public void setOilLevel(double oilLevel) {
@@ -43,41 +57,45 @@ public class Point {
 		return oilLevel;
 	}
 
+	public void modifyCalculateParams( double[] paramChanges){
+	    for (int i = 0; i < calculationParams.length; i++){
+	        calculationParams[i] += paramChanges[i];
+        }
+    }
+
 	public void calculateNewState() {
-		calculate2();
-	}
-
-	public void calculate1(){
-		float sum = 0;
-		for (Point item: neighbors) {
-			sum += 2*item.getState();
-		}
-		if(type == 1){
-			nextOilLevel =  (4*oilLevel + sum/2)/8;
-		} else {
-			nextOilLevel = (sum)/8;
-		}
-
-	}
-
-	public void calculate2() {
-		double sum = 0;
-		int a = 2;
-		int b = 50;
 		if (type == 1) {
-			for (Point item : neighbors) {
-				sum += item.getState();
-			}
-			nextOilLevel = (b * oilLevel + sum) / (b+4);
+            calculateNewStateOnLand();
 		} else {
-			sum = a * neighbors[0].getState() +
-					a * neighbors[1].getState() + a * neighbors[2].getState() +
-					a * neighbors[3].getState();
-			sum += oilLevel;
-					nextOilLevel = sum/(a*4 + 1);
+			calculateNewStateOnWater();
 		}
-		if (nextOilLevel < 0.01) nextOilLevel = 0;
+
+        if (nextOilLevel < 0.01) nextOilLevel = 0;
+
+    }
+
+	public void calculateNewStateOnWater(){
+	    double sum = oilLevel;
+	    double paramSum = 1;
+	    for (int i = 0; i < neighbors.length; i++){
+	        sum += calculationParams[i]*neighbors[i].getState();
+	        paramSum += calculationParams[i];
+        }
+        nextOilLevel = sum / paramSum;
+
+
 	}
+
+	public void calculateNewStateOnLand(){
+	    double sum = 0;
+	    int b = 50;
+
+        for (Point item : neighbors) {
+            sum += item.getState();
+        }
+        nextOilLevel = (b * oilLevel + sum) / (b+4);
+    }
+
 
 	public void changeState() {
 		oilLevel = nextOilLevel;

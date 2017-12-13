@@ -8,6 +8,7 @@ public class IOHelper {
         Point[][] result = null;
         int imgHeight = img.getHeight();
         int imgWidth = img.getWidth();
+        System.out.println(imgHeight + "h    w" + imgWidth);
         result = new Point[imgHeight][imgWidth];
 
         for(int i=0; i<imgHeight; i++){
