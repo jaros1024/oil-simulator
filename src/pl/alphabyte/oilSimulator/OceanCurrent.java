@@ -11,8 +11,6 @@ public class OceanCurrent implements Serializable {
     private boolean finished = false;
     private java.awt.Point cursorPosition;
 
-    private int addingMode = 0;
-
     public void draw(Graphics g){
         g.setColor(Color.BLACK);
         int x1, x2, y1, y2;
