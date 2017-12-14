@@ -37,7 +37,7 @@ public class Point {
 		neighbors = new Point[4];
 		calculationParams = new double[4];
 		for (int i = 0; i < calculationParams.length; i++) {
-			calculationParams[i] = 1;
+			calculationParams[i] = 2;
         }
 	}
 
@@ -57,7 +57,7 @@ public class Point {
 		return oilLevel;
 	}
 
-	public void modifyCalculateParams( double[] paramChanges){
+	public void modifyCalculationParams(double[] paramChanges){
 	    for (int i = 0; i < calculationParams.length; i++){
 	        calculationParams[i] += paramChanges[i];
         }

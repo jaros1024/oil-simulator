@@ -51,7 +51,6 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private void initialize() {
 		Point tmp = new Point();
 		points = IOHelper.loadPointsFromImage(inputImage);
-		System.out.println(points.length + "   " + points[12].length);
 		cache = new BoardCache(this, points[0].length, points.length);
 		currentFactory = new OceanCurrent.Factory(this);
 		windFactory = new Wind.Factory(this);
@@ -88,6 +87,13 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
         points[y][x] = point;
     }
 
+    public int getXSize(){
+    	return points[12].length;
+	}
+
+	public int getYSize(){
+		return points.length;
+	}
 	// single iteration
 	public void iteration() {
 		for (int x = 0; x < points.length; ++x)

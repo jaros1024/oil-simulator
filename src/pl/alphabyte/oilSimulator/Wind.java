@@ -44,7 +44,7 @@ public class Wind implements Serializable {
 
         double directionInRadians, valX, valY;
         for (int i = 0; i < windValueArray.length; i++){ windValueArray[i] = 0;}
-        double windPowerParam = 0.1;
+        double windPowerParam = 0.05;
 
         directionInRadians = direction / 2 / Math.PI;
         valX = speed*Math.cos(directionInRadians)*speed*windPowerParam;
@@ -108,7 +108,6 @@ public class Wind implements Serializable {
         public void createWind(java.awt.Point p){
             tmpWind = new Wind(p.x, p.y);
             board.repaint();
-            System.out.println(p.x + " px py " + p.y);
         }
 
         public Wind saveWind(java.awt.Point p){
@@ -119,7 +118,6 @@ public class Wind implements Serializable {
             while (!tmpWind.setSpeed());
 
             tmpWind.calculateWindArray();
-            System.out.println(tmpWind.getX() + "   " + tmpWind.getWidth() + "     " + tmpWind.getY() + "       " + tmpWind.getHeight());
             applyWind();
             Wind returnValue = tmpWind;
             tmpWind = null;
@@ -133,10 +131,8 @@ public class Wind implements Serializable {
             for (int i = tmpWind.getX(); i < tmpWind.getX() + tmpWind.getWidth(); i++){
                 for (int j = tmpWind.getY(); j < tmpWind.getY() + tmpWind.getHeight(); j++){
                     tmpPoint = board.getPoint(i,j);
-                    tmpPoint.modifyCalculateParams(tmpWind.getWindValueArray());
+                    tmpPoint.modifyCalculationParams(tmpWind.getWindValueArray());
                     board.setPoint(i,j,tmpPoint);
-                    System.out.println();
-                    System.out.println(i + "  " + j);
                 }
             }
 
