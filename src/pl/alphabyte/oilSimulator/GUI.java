@@ -85,6 +85,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		}
 		container.add(board, BorderLayout.CENTER);
 		container.add(buttonPanel, BorderLayout.SOUTH);
+		board.repaint();
 	}
 
 	/**
