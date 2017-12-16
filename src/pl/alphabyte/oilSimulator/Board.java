@@ -77,6 +77,14 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 				}
 			}
 		}
+
+		for(OceanCurrent current : currentVector){
+			currentFactory.applyCurrent(current);
+		}
+
+		for(Wind wind : windVector){
+			windFactory.applyWind(wind);
+		}
 	}
 
 	public Point getPoint(int x, int y){

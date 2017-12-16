@@ -126,6 +126,10 @@ public class Wind implements Serializable {
         }
 
         public void applyWind(){
+            applyWind(tmpWind);
+        }
+
+        public void applyWind(Wind tmpWind){
             Point tmpPoint;
 
             for (int i = tmpWind.getX(); i < tmpWind.getX() + tmpWind.getWidth(); i++){

@@ -89,6 +89,10 @@ public class OceanCurrent implements Serializable {
         }
 
         public void applyCurrent(){
+            applyCurrent(tmpCurrent);
+        }
+
+        public void applyCurrent(OceanCurrent tmpCurrent){
             Vector<java.awt.Point> currPoints = tmpCurrent.getPoints();
             double x1,x2,y1,y2;
             double a1,b1,c1;
