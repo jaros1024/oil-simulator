@@ -69,7 +69,6 @@ public class Point {
 		} else {
 			calculateNewStateOnWater();
 		}
-
         if (nextOilLevel < 0.01) nextOilLevel = 0;
 
     }
