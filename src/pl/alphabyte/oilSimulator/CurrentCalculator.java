@@ -54,21 +54,19 @@ public class CurrentCalculator {
 
     public static double[] calculateVector(double x1, double x2, double y1, double y2){
 
-        // sprowadzenie wektora do przedziału <0, 1>
+        // normalizacja wektora do przedziału <0, 1>
 
         double [] vector = new double[2];
-        double vMax;
+        double lenght;
+
         vector[0] = x2 - x1;
         vector[1] = y2 - y1;
-        if(Math.abs(vector[0]) > Math.abs(vector[1])){
-            vMax = Math.abs(vector[0]);
-            vector[0] = vector[0] / (Math.abs(vMax)+1);
-            vector[1] = vector[1] / (Math.abs(vMax)+1);
-        } else {
-            vMax = Math.abs(vector[1]);
-            vector[0] = vector[0] / (Math.abs(vMax)+1);
-            vector[1] = vector[1] / (Math.abs(vMax)+1);
-        }
+
+        lenght = Math.sqrt(Math.pow(vector[0],2) + Math.pow(vector[1], 2));
+
+        vector[0] = vector[0] / lenght / 3;
+        vector[1] = vector[1] / lenght / 3;
+
         return vector;
     }
     public static double calculateDistance(int i, int j, double[][] linesParamsTab){
@@ -80,7 +78,7 @@ public class CurrentCalculator {
     }
 
     public static boolean isPointNearCurrent(double dist, double[][] linesParamsTab, int i, int j, double[] vector){
-        //testowanie rozległym warunkiem, czy dany punkt znajduje się w sąsiedztwie wektora
+        //testowanie czy dany punkt znajduje się w sąsiedztwie wektora
         boolean val;
         val =   (dist < OceanCurrent.currRange && j < linesParamsTab[1][0] * i + linesParamsTab[1][2] && j > linesParamsTab[1][0] * i + linesParamsTab[1][1]) ||
                 (vector[1] == 0 && dist < OceanCurrent.currRange && i < linesParamsTab[1][2] && i > linesParamsTab[1][1]);

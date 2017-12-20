@@ -10,7 +10,7 @@ public class OceanCurrent implements Serializable {
     private Vector<java.awt.Point> points = new Vector<java.awt.Point>();
     private boolean finished = false;
     private java.awt.Point cursorPosition;
-    public static final double currRange = 10;
+    public static final double currRange = 15;
     public static final double currSpeed = 20;
 
     public void draw(Graphics g){
@@ -98,6 +98,8 @@ public class OceanCurrent implements Serializable {
             double[] pointParamsTab = {0,0,0,0};
             double[] vector;
             pl.alphabyte.oilSimulator.Point point;
+            double distFactor = 4;
+
             for (int id = 0; id < currPoints.size() - 1; id++ ){
                 x1 = currPoints.get(id).getX();
                 y1 = currPoints.get(id).getY();
@@ -118,11 +120,11 @@ public class OceanCurrent implements Serializable {
                         {
                             for(int it = 0; it < pointParamsTab.length; it++) pointParamsTab[it] = 0;
 
-                            if (vector[0] >= 0) pointParamsTab[1] = vector[0] * tmpCurrent.currSpeed / Math.log(dist + 4);
-                            else pointParamsTab[2] = -1 * vector[0] * tmpCurrent.currSpeed / Math.log(dist + 4);
+                            if (vector[0] >= 0) pointParamsTab[1] = vector[0] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
+                            else pointParamsTab[2] = -1 * vector[0] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
 
-                            if (vector[1] >= 0) pointParamsTab[0] = vector[1] * tmpCurrent.currSpeed / Math.log(dist + 4);
-                            else pointParamsTab[3] = -1 * vector[1] * tmpCurrent.currSpeed / Math.log(dist + 4);
+                            if (vector[1] >= 0) pointParamsTab[0] = vector[1] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
+                            else pointParamsTab[3] = -1 * vector[1] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
 
                             point = board.getPoint(i, j);
                             point.modifyCalculationParams(pointParamsTab);
