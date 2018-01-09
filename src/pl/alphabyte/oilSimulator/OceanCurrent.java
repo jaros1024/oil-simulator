@@ -10,6 +10,8 @@ public class OceanCurrent implements Serializable {
     private Vector<java.awt.Point> points = new Vector<java.awt.Point>();
     private boolean finished = false;
     private java.awt.Point cursorPosition;
+    public static final double currRange = 15;
+    public static final double currSpeed = 20;
 
     public void draw(Graphics g){
         g.setColor(Color.BLACK);
@@ -49,7 +51,6 @@ public class OceanCurrent implements Serializable {
     }
 
     public static class Factory {
-        private static final double CURR_SPEED = 4;
         private OceanCurrent tmpCurrent;
         private Board board;
 
@@ -87,23 +88,19 @@ public class OceanCurrent implements Serializable {
             setCursorPosition(e.getPoint());
             board.repaint();
         }
-
-        public void applyCurrent(){
-            applyCurrent(tmpCurrent);
-        }
+        public void applyCurrent() { applyCurrent(tmpCurrent);}
 
         public void applyCurrent(OceanCurrent tmpCurrent){
-            Vector<java.awt.Point> currPoints = tmpCurrent.getPoints();
+            Vector<Point> currPoints = tmpCurrent.getPoints();
             double x1,x2,y1,y2;
-            double a1,b1,c1;
-            double a2,b2,b3;
-            int maxDist = 10;
+            double[][] linesParamsTab;
             double dist;
-            double[] paramsTab = {0,0,0,0};
-            double vecX, vecY, vMax;
+            double[] pointParamsTab = {0,0,0,0};
+            double[] vector;
             pl.alphabyte.oilSimulator.Point point;
-            for (int id = 0; id < currPoints.size() - 1; id++ ){
+            double distFactor = 4;
 
+            for (int id = 0; id < currPoints.size() - 1; id++ ){
                 x1 = currPoints.get(id).getX();
                 y1 = currPoints.get(id).getY();
                 x2 = currPoints.get(id +1).getX();
@@ -111,90 +108,31 @@ public class OceanCurrent implements Serializable {
 
                 if(x1 == x2 && y1 == y2) continue;
 
-                if(x2 - x1 == 0){
-                    a2 = 0;
-                    if(y2 > y1){
-                        b2 = y1;
-                        b3 = y2;
-                    } else {
-                        b2 = y2;
-                        b3 = y1;
-                    }
-                    a1 = 1;
-                    b1 = 0;
-                    c1 = -x1;
-                }else
-                {
-                    if(y2 - y1 == 0){
-                        a2 = 0;
-                        if(x2 > x1){
-                            b2 = x1;
-                            b3 = x2;
-                        } else {
-                            b2 = x2;
-                            b3 = x1;
-                        }
-                        a1 = 0;
-                        b1 = 1;
-                        c1 = -y1;
+                linesParamsTab = CurrentCalculator.calculateLinesEquationsTab(x1,x2,y1,y2);
+                vector = CurrentCalculator.calculateVector(x1,x2,y1,y2);
 
-                    }else{
-                        a1 = (y2 - y1) / (x2 - x1);
-                        b1 = -1;
-                        c1 = y1 - a1 * x1;
-
-                        a2 = -1/a1;
-
-                        if(y2 > y1){
-                            b2 = y1 - a2 * x1;
-                            b3 = y2 - a2 * x2;
-                        } else {
-                            b3 = y1 - a2 * x1;
-                            b2 = y2 - a2 * x2;
-                        }
-                    }
-                }
-
-                vecX = x2 - x1;
-                vecY = y2 - y1;
-                if(Math.abs(vecX) > Math.abs(vecY)){
-                    vMax = Math.abs(vecX);
-                    vecX = vecX / (Math.abs(vMax)+1);
-                    vecY = vecY / (Math.abs(vMax)+1);
-                } else {
-                    vMax = Math.abs(vecY);
-                    vecX = vecX / (Math.abs(vMax)+1);
-                    vecY = vecY / (Math.abs(vMax)+1);
-                }
                 for(int i = 0; i < board.getXSize(); i++){
                     for (int j = 0; j < board.getYSize(); j++){
 
-                        for(int it = 0; it < paramsTab.length; it++) paramsTab[it] = 0;
+                        dist = CurrentCalculator.calculateDistance(i,j,linesParamsTab);
 
-                        dist = Math.abs(a1 * i + b1 * j + c1) / Math.sqrt(a1 * a1 + b1 * b1);
+                        if(CurrentCalculator.isPointNearCurrent(dist, linesParamsTab, i, j, vector))
+                        {
+                            for(int it = 0; it < pointParamsTab.length; it++) pointParamsTab[it] = 0;
 
-                        if((dist < maxDist && j < a2 * i + b3 && j > a2 * i + b2) ||
-                                (y1 == y2 && dist < maxDist && i < b3 && i > b2)) {
-                            if (vecX >= 0) paramsTab[1] = vecX * CURR_SPEED / Math.log(dist + 4);
-                            else paramsTab[2] = -1 * vecX * CURR_SPEED / Math.log(dist + 4);
+                            if (vector[0] >= 0) pointParamsTab[1] = vector[0] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
+                            else pointParamsTab[2] = -1 * vector[0] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
 
-                            if (vecY >= 0) paramsTab[0] = vecY * CURR_SPEED / Math.log(dist + 4);
-                            else paramsTab[3] = -1 * vecY * CURR_SPEED / Math.log(dist + 4);
+                            if (vector[1] >= 0) pointParamsTab[0] = vector[1] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
+                            else pointParamsTab[3] = -1 * vector[1] * tmpCurrent.currSpeed / Math.log(dist + distFactor);
 
                             point = board.getPoint(i, j);
-                            point.modifyCalculationParams(paramsTab);
+                            point.modifyCalculationParams(pointParamsTab);
                             board.setPoint(i, j, point);
-
                         }
-
-
                     }
                 }
-
-
             }
-
-
         }
 
         public void addNextPoint(java.awt.Point point){
