@@ -1,5 +1,7 @@
 package pl.alphabyte.oilSimulator;
 
+import org.imgscalr.Scalr;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -9,16 +11,25 @@ import java.io.File;
 import java.io.IOException;
 
 public class MapSelector {
+    private static final String IMG_FILE = "map2.bmp";
+    private static final double ZOOM_CONST = 0.05;
+
+    private Program program;
     public JPanel panel1;
     private JButton loadImageButton;
     private JButton selectButton;
     private JLabel label;
     private JPanel centerPanel;
     private JScrollPane scrollPane;
-    private static final String IMG_FILE = "map2.bmp";
+    private JButton zoomInButton;
+    private JButton zoomOutButton;
+
     private BufferedImage fullImage;
+    private BufferedImage scaledImage;
     private BufferedImage trimmedImage;
-    private Program program;
+
+    private double scale;
+
 
     public MapSelector(Program program){
         this.program = program;
@@ -38,11 +49,43 @@ public class MapSelector {
                 loadFile();
             }
         });
-
+        zoomInButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                scale += ZOOM_CONST;
+                if(scale > 1){
+                    scale = 1;
+                }
+                if(scale == 1) {
+                    ImageIcon icon = new ImageIcon(fullImage);
+                    label.setIcon(icon);
+                }
+                else {
+                    scaleImage(scale);
+                    ImageIcon icon = new ImageIcon(scaledImage);
+                    label.setIcon(icon);
+                }
+            }
+        });
+        zoomOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                scale -= ZOOM_CONST;
+                if(scale < 0.07){
+                    scale = 0.07;
+                }
+                scaleImage(scale);
+                ImageIcon icon = new ImageIcon(scaledImage);
+                label.setIcon(icon);
+            }
+        });
     }
 
     private void selectImage(){
-        BufferedImage trimmedImage = fullImage.getSubimage(getX(), getY(), getWidth(), getHeight());
+        if(scale == 1){
+            scaledImage = fullImage;
+        }
+        BufferedImage trimmedImage = scaledImage.getSubimage(getX(), getY(), getWidth(), getHeight());
         synchronized (program.lock){
             program.setImage(trimmedImage);
             program.lock.notify();
@@ -64,12 +107,24 @@ public class MapSelector {
         fullImage = null;
         try {
             fullImage = ImageIO.read(file);
-            ImageIcon icon = new ImageIcon(fullImage);
+            scaleImage(0.07);
+            ImageIcon icon = new ImageIcon(scaledImage);
             label.setIcon(icon);
+            label.setText("");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    private void scaleImage(double scale){
+        this.scale = scale;
+        int targetSize = (int)Math.round(fullImage.getWidth()*scale);
+        scaledImage = Scalr.resize(fullImage, Scalr.Method.AUTOMATIC, targetSize);
+    }
+
+    /*private void updateImage(){
+
+    }*/
 
     private int getX(){
         return (int)scrollPane.getViewport().getViewPosition().getX();

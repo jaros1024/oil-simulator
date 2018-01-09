@@ -1,9 +1,12 @@
 package pl.alphabyte.oilSimulator;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class IOHelper {
+    public static final int WATER_THRESHOLD = 245;
+
     public static Point[][] loadPointsFromImage(BufferedImage img){
         Point[][] result = null;
         int imgHeight = img.getHeight();
@@ -12,14 +15,18 @@ public class IOHelper {
 
         for(int i=0; i<imgHeight; i++){
             for(int j=0; j<imgWidth; j++){
-                int color = img.getRGB(j, i);
+                Color c = new Color(img.getRGB(j, i));
+                int red = c.getRed();
+                int green = c.getGreen();
+                int blue = c.getBlue();
 
                 Point p = new Point();
-                if(color != Board.IMAGE_WATER_COLOR) {
-                    p.setType(1);
+
+                if(red > WATER_THRESHOLD && green > WATER_THRESHOLD && blue > WATER_THRESHOLD){
+                    p.setType(0);
                 }
                 else {
-                    p.setType(0);
+                    p.setType(1);
                 }
                 result[i][j] = p;
             }
