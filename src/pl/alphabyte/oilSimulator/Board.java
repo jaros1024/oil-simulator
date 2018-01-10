@@ -23,6 +23,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private Vector<Wind> windVector = new Vector<Wind>();
 	private Statistics stats;
 	private double scale;
+	private transient double intensity = Point.MAX_OIL;
 	private transient boolean[][] contamined;
 
 	private transient BoardCache cache;
@@ -190,7 +191,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private void toggleNeighborhood(Integer[] position){
 		for(int i=position[0]; i<=position[2]; i++){
 			for(int j=position[1]; j<=position[3]; j++){
-				points[j][i].clicked();
+				points[j][i].clicked(intensity);
 			}
 		}
 		int window = CLICK_RADIUS*2+1;
@@ -314,4 +315,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		this.stats = stats;
 	}
 
+	public void setIntensity(double intensity) {
+		this.intensity = intensity;
+	}
 }

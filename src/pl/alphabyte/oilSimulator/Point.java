@@ -6,7 +6,7 @@ public class Point {
 
 	public static final Point DEAD_POINT = new Point();
 	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306), new Color(0xff4907)};
-	private static final double MAX_OIL = 20;
+	public static final double MAX_OIL = 20;
 
 	private Point [] neighbors;
 	private double [] calculationParams;
@@ -49,8 +49,8 @@ public class Point {
 		this.type = type;
 	}
 
-	public void clicked() {
-		oilLevel = MAX_OIL;
+	public void clicked(double intensity) {
+		oilLevel = intensity;
 	}
 	
 	public double getState() {

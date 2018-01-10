@@ -19,6 +19,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private JButton addCurrent;
 	private JButton saveBtn;
 	private JSlider pred;
+	private JSlider intensity;
 	private JFrame frame;
 	private Statistics stats;
 	private int iterNum = 0;
@@ -58,6 +59,13 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		pred.addChangeListener(this);
 		pred.setValue(maxDelay - timer.getDelay());
 
+		intensity = new JSlider();
+		intensity.setMinimum(1);
+		intensity.setMaximum((int)Point.MAX_OIL);
+		intensity.setToolTipText("Oil intensity");
+		intensity.addChangeListener(this);
+		intensity.setValue((int)Point.MAX_OIL);
+
 		addWind = new JButton("Add wind");
 		addWind.setActionCommand("addWind");
 		addWind.addActionListener(this);
@@ -73,6 +81,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		buttonPanel.add(start);
 		buttonPanel.add(clear);
 		buttonPanel.add(pred);
+		buttonPanel.add(intensity);
 		buttonPanel.add(addWind);
 		buttonPanel.add(addCurrent);
 		buttonPanel.add(saveBtn);
@@ -152,7 +161,12 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
 	 */
 	public void stateChanged(ChangeEvent e) {
-		timer.setDelay(maxDelay - pred.getValue());
+		if(e.getSource().equals(pred)) {
+			timer.setDelay(maxDelay - pred.getValue());
+		}
+		else if(e.getSource().equals(intensity)){
+			board.setIntensity(intensity.getValue());
+		}
 	}
 
 	public void setScale(double scale){
