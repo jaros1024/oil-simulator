@@ -20,6 +20,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private JButton saveBtn;
 	private JSlider pred;
 	private JFrame frame;
+	private Statistics stats;
 	private int iterNum = 0;
 	private final int maxDelay = 500;
 	private final int initDelay = 100;
@@ -76,6 +77,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		buttonPanel.add(addCurrent);
 		buttonPanel.add(saveBtn);
 
+		JPanel statsPanel = new JPanel();
+		statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+		stats = new Statistics(statsPanel);
+
 		/* poniższe rzutowanie jest takie zjebane po to żeby nie musieć przerabiać nieswojego kodu, nie bijcie */
 		if(serializedBoard == null) {
 			board = new Board(((Program) frame).getImage());
@@ -83,8 +88,12 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		else {
 			board = IOHelper.fromFile(serializedBoard);
 		}
+
+		board.setStats(stats);
 		container.add(board, BorderLayout.CENTER);
 		container.add(buttonPanel, BorderLayout.SOUTH);
+		container.add(statsPanel, BorderLayout.EAST);
+		statsPanel.setPreferredSize(new Dimension(400, frame.getHeight()));
 		board.repaint();
 	}
 
@@ -144,5 +153,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	 */
 	public void stateChanged(ChangeEvent e) {
 		timer.setDelay(maxDelay - pred.getValue());
+	}
+
+	public void setScale(double scale){
+		board.setScale(scale);
+		stats.setScale(board.getRealPixelExpanse());
 	}
 }

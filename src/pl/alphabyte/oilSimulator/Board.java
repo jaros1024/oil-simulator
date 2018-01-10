@@ -21,6 +21,9 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private transient Point[][] points;
 	private Vector<OceanCurrent> currentVector = new Vector<OceanCurrent>();
 	private Vector<Wind> windVector = new Vector<Wind>();
+	private Statistics stats;
+	private double scale;
+	private transient boolean[][] contamined;
 
 	private transient BoardCache cache;
 	private transient BufferedImage inputImage;
@@ -28,8 +31,8 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private transient OceanCurrent.Factory currentFactory;
 	private transient Wind.Factory windFactory;
 
-	public static final int IMAGE_WATER_COLOR = -1;
 	private static final int CLICK_RADIUS = 2;
+	private static final double REAL_PIXEL_SIZE = 2.275;
 
 	/* LISTA TRYBÓW
 	   0 - DOMYŚLNY, KLIKNIĘCIE MALUJE ROPE
@@ -85,6 +88,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		for(Wind wind : windVector){
 			windFactory.applyWind(wind);
 		}
+		contamined = new boolean[points.length][points[0].length];
 	}
 
 	public Point getPoint(int x, int y){
@@ -104,14 +108,24 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	}
 	// single iteration
 	public void iteration() {
+		int nonZero = 0;
+
 		for (int x = 0; x < points.length; ++x)
 			for (int y = 0; y < points[x].length; ++y)
 				points[x][y].calculateNewState();
 
 		for (int x = 0; x < points.length; ++x)
-			for (int y = 0; y < points[x].length; ++y)
+			for (int y = 0; y < points[x].length; ++y) {
 				points[x][y].changeState();
+				if(points[x][y].getState() != 0){
+					++nonZero;
+					contamined[x][y] = true;
+				}
+			}
+
 		this.repaint();
+		stats.setCurrentExpanse(nonZero*getRealPixelExpanse());
+		stats.setAllExpanse(countContamined()*getRealPixelExpanse());
 	}
 
 	// clearing board
@@ -199,7 +213,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		if(addingMode == 0) {
+		if(addingMode == 0 && e.getX() <= points[0].length && e.getY() <= points.length) {
 			toggleNeighborhood(getNeighborhood(e.getX(), e.getY()));
 		}
 		else {
@@ -259,6 +273,26 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		initialize();
 	}
 
+	private double getRealPixelSize(){
+		return REAL_PIXEL_SIZE / scale;
+	}
+
+	public double getRealPixelExpanse(){
+		return Math.pow(getRealPixelSize(), 2);
+	}
+
+	private int countContamined(){
+		int result = 0;
+		for(int i = 0; i<contamined.length;i++){
+			for(int j = 0; j<contamined[i].length; j++){
+				if(contamined[i][j]){
+					++result;
+				}
+			}
+		}
+		return result;
+	}
+
 	void getCacheImage(Graphics g){
 		drawAll(g);
 	}
@@ -270,6 +304,14 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	}
 
 	public void mousePressed(MouseEvent e) {
+	}
+
+	public void setScale(double scale) {
+		this.scale = scale;
+	}
+
+	public void setStats(Statistics stats){
+		this.stats = stats;
 	}
 
 }

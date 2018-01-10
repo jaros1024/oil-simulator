@@ -35,8 +35,9 @@ public class Program extends JFrame {
 
 		serializedBoard = iw.getFileToLoad();
 
+		MapSelector ms = null;
 		if(serializedBoard == null) {
-			MapSelector ms = new MapSelector(this);
+			ms = new MapSelector(this);
 			ms.initialize();
 			setContentPane(ms.panel1);
 			this.setSize(1000, 700);
@@ -68,6 +69,10 @@ public class Program extends JFrame {
 
 		this.setSize(1024, 768);
 		setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);
+
+		if(ms != null) {
+			gui.setScale(ms.getScale());
+		}
 		this.setVisible(true);
 	}
 

@@ -39,6 +39,9 @@ public class MapSelector {
         selectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!fileLoaded()){
+                    return;
+                }
                 selectImage();
             }
         });
@@ -52,6 +55,9 @@ public class MapSelector {
         zoomInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!fileLoaded()){
+                    return;
+                }
                 scale += ZOOM_CONST;
                 if(scale > 1){
                     scale = 1;
@@ -70,6 +76,9 @@ public class MapSelector {
         zoomOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!fileLoaded()){
+                    return;
+                }
                 scale -= ZOOM_CONST;
                 if(scale < 0.07){
                     scale = 0.07;
@@ -122,9 +131,13 @@ public class MapSelector {
         scaledImage = Scalr.resize(fullImage, Scalr.Method.AUTOMATIC, targetSize);
     }
 
-    /*private void updateImage(){
-
-    }*/
+    private boolean fileLoaded(){
+        if(fullImage == null){
+            JOptionPane.showMessageDialog(program, "You need to load image file first!", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
 
     private int getX(){
         return (int)scrollPane.getViewport().getViewPosition().getX();
@@ -142,4 +155,7 @@ public class MapSelector {
         return (int)scrollPane.getViewport().getHeight();
     }
 
+    public double getScale() {
+        return scale;
+    }
 }
