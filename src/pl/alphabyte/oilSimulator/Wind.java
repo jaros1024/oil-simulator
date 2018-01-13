@@ -79,6 +79,9 @@ public class Wind implements Serializable {
 
     public boolean setSpeed() {
         String speedStr = (String) JOptionPane.showInputDialog("Please input wind speed:");
+        if(speedStr == null){
+            return false;
+        }
 
         speed = Double.parseDouble(speedStr);
         if(speed < 0) {
@@ -89,6 +92,9 @@ public class Wind implements Serializable {
 
     public boolean setDirection() {
         String directionStr = JOptionPane.showInputDialog("Please input wind direction (0-360):");
+        if(directionStr == null){
+            return false;
+        }
 
         direction = Double.parseDouble(directionStr);
         if(direction < 0 || direction > 360){
