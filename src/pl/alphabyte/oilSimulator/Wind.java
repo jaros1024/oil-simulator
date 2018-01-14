@@ -44,7 +44,7 @@ public class Wind implements Serializable {
 
         double directionInRadians, valX, valY;
         for (int i = 0; i < windValueArray.length; i++){ windValueArray[i] = 0;}
-        double windPowerParam = 0.1;
+        double windPowerParam = 0.08;
 
         directionInRadians = direction * Math.PI / 180;
         valX = Math.cos(directionInRadians)*speed*windPowerParam;

@@ -10,7 +10,7 @@ public class OceanCurrent implements Serializable {
     private Vector<java.awt.Point> points = new Vector<java.awt.Point>();
     private boolean finished = false;
     private java.awt.Point cursorPosition;
-    public static final double currRange = 15;
+    public static final double currRange = 20;
     public static final double currSpeed = 20;
 
     public void draw(Graphics g){
@@ -98,7 +98,7 @@ public class OceanCurrent implements Serializable {
             double[] pointParamsTab = {0,0,0,0};
             double[] vector;
             pl.alphabyte.oilSimulator.Point point;
-            double distFactor = 4;
+            double distFactor = 20;
 
             for (int id = 0; id < currPoints.size() - 1; id++ ){
                 x1 = currPoints.get(id).getX();

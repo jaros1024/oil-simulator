@@ -21,7 +21,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private transient Point[][] points;
 	private Vector<OceanCurrent> currentVector = new Vector<OceanCurrent>();
 	private Vector<Wind> windVector = new Vector<Wind>();
-	private Statistics stats;
+	private transient Statistics stats;
 	private double scale;
 	private transient double intensity = Point.MAX_OIL;
 	private transient boolean[][] contamined;
@@ -32,7 +32,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private transient OceanCurrent.Factory currentFactory;
 	private transient Wind.Factory windFactory;
 
-	private static final int CLICK_RADIUS = 2;
+	private transient static final int CLICK_RADIUS = 2;
 	private static final double REAL_PIXEL_SIZE = 2.275;
 
 	/* LISTA TRYBÓW
@@ -108,8 +108,9 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		return points.length;
 	}
 	// single iteration
-	public void iteration() {
+	public void iteration(int iterNum) {
 		int nonZero = 0;
+		double volume = 0;
 
 		for (int x = 0; x < points.length; ++x)
 			for (int y = 0; y < points[x].length; ++y)
@@ -118,6 +119,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		for (int x = 0; x < points.length; ++x)
 			for (int y = 0; y < points[x].length; ++y) {
 				points[x][y].changeState();
+				volume += points[x][y].getState()*getRealPixelExpanse()*1000;
 				if(points[x][y].getState() != 0){
 					++nonZero;
 					contamined[x][y] = true;
@@ -125,8 +127,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 			}
 
 		this.repaint();
+		stats.setDays((int) Math.floor(iterNum/5));
 		stats.setCurrentExpanse(nonZero*getRealPixelExpanse());
 		stats.setAllExpanse(countContamined()*getRealPixelExpanse());
+		stats.setVolume(volume);
 	}
 
 	// clearing board
@@ -135,6 +139,8 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 			for (int y = 0; y < points[x].length; ++y) {
 				points[x][y].setOilLevel(0);
 			}
+		stats.setAllExpanse(0);
+		clearContaminated();
 		this.repaint();
 	}
 
@@ -274,6 +280,14 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		initialize();
 	}
 
+	private  void clearContaminated(){
+		for (int x = 0; x < points.length; ++x) {
+			for (int y = 0; y < points[x].length; ++y) {
+				contamined[x][y] = false;
+			}
+		}
+	}
+
 	private double getRealPixelSize(){
 		return REAL_PIXEL_SIZE / scale;
 	}
@@ -319,3 +333,4 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		this.intensity = intensity;
 	}
 }
+

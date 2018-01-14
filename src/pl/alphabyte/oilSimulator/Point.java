@@ -6,11 +6,13 @@ public class Point {
 
 	public static final Point DEAD_POINT = new Point();
 	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306), new Color(0xff4907)};
-	public static final double MAX_OIL = 20;
+	public static final double MAX_OIL = 10; //
 
 	private Point [] neighbors;
 	private double [] calculationParams;
 
+	private transient static final double EVAPORIZATION = 0.005;
+	private transient static final double MIN_OIL_LEVEL = 0.000001;
 
 	/* parametry kierunkow tablica [4]
 	    0 - w dol
@@ -69,13 +71,13 @@ public class Point {
 		} else {
 			calculateNewStateOnWater();
 		}
-        if (nextOilLevel < 0.01) nextOilLevel = 0;
-
+		nextOilLevel = nextOilLevel*(1-EVAPORIZATION);
+		if (nextOilLevel < MIN_OIL_LEVEL) nextOilLevel = 0;
     }
 
 	public void calculateNewStateOnWater(){
-	    double sum = oilLevel;
-	    double paramSum = 1;
+	    double sum = 0;
+	    double paramSum = 0;
 	    for (int i = 0; i < neighbors.length; i++){
 	        sum += calculationParams[i]*neighbors[i].getState();
 	        paramSum += calculationParams[i];
