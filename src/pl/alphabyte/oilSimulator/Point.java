@@ -11,7 +11,7 @@ public class Point {
 	private Point [] neighbors;
 	private double [] calculationParams;
 
-	private transient static final double EVAPORIZATION = 0.005;
+	private transient static final double EVAPORIZATION = 0.002;
 	private transient static final double MIN_OIL_LEVEL = 0.000001;
 
 	/* parametry kierunkow tablica [4]

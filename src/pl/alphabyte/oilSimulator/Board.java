@@ -34,6 +34,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 
 	private transient static final int CLICK_RADIUS = 2;
 	private static final double REAL_PIXEL_SIZE = 2.275;
+	private transient static final int ITERATIONS_PER_DAY = 8;
 
 	/* LISTA TRYBÓW
 	   0 - DOMYŚLNY, KLIKNIĘCIE MALUJE ROPE
@@ -127,7 +128,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 			}
 
 		this.repaint();
-		stats.setDays((int) Math.floor(iterNum/5));
+		stats.setDays((int) Math.floor(iterNum/ITERATIONS_PER_DAY));
 		stats.setCurrentExpanse(nonZero*getRealPixelExpanse());
 		stats.setAllExpanse(countContamined()*getRealPixelExpanse());
 		stats.setVolume(volume);
