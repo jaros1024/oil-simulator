@@ -90,7 +90,6 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
 		stats = new Statistics(statsPanel);
 
-		/* poniższe rzutowanie jest takie zjebane po to żeby nie musieć przerabiać nieswojego kodu, nie bijcie */
 		if(serializedBoard == null) {
 			board = new Board(((Program) frame).getImage());
 		}

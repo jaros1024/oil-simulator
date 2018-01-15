@@ -329,6 +329,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 
 	public void setStats(Statistics stats){
 		this.stats = stats;
+		stats.setScale(getRealPixelExpanse());
 	}
 
 	public void setIntensity(double intensity) {
