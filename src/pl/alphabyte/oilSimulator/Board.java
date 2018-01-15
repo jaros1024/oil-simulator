@@ -32,9 +32,9 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private transient OceanCurrent.Factory currentFactory;
 	private transient Wind.Factory windFactory;
 
-	private transient static final int CLICK_RADIUS = 2;
+	private static final int CLICK_RADIUS = 2;
 	private static final double REAL_PIXEL_SIZE = 2.275;
-	private transient static final int ITERATIONS_PER_DAY = 8;
+	private static final int ITERATIONS_PER_DAY = 8;
 
 	/* LISTA TRYBÓW
 	   0 - DOMYŚLNY, KLIKNIĘCIE MALUJE ROPE
@@ -221,10 +221,11 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	}
 
 	public void mouseClicked(MouseEvent e) {
+		System.out.println(intensity);
 		if(addingMode == 0 && e.getX() <= points[0].length && e.getY() <= points.length) {
 			toggleNeighborhood(getNeighborhood(e.getX(), e.getY()));
 		}
-		else {
+		else if(addingMode == 1){
 			if(currentFactory.isBeingCreated() && e.getButton() == 3) {
 				currentVector.add(currentFactory.saveCurrent());
 			}

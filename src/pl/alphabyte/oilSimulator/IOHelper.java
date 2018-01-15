@@ -56,6 +56,7 @@ public class IOHelper {
             board = (Board) in.readObject();
             in.close();
             fileIn.close();
+            board.setIntensity(Point.MAX_OIL);
         } catch(IOException|ClassNotFoundException e) {
             e.printStackTrace();
         }
