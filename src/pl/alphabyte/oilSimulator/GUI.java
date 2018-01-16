@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Class containing GUI: board + buttons
+ * Class containing GUI: board, buttons and sliders
  */
 public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private Timer timer;
@@ -34,7 +34,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	}
 
 	/**
+	 * Initializing the GUI and loading a board
+	 *
 	 * @param container to which GUI and board is added
+	 * @param serializedBoard Location of file with serialized board to load
 	 */
 	public void initialize(Container container, String serializedBoard) {
 		container.setLayout(new BorderLayout());
@@ -106,7 +109,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	}
 
 	/**
-	 * handles clicking on each button
+	 * Handles clicking on each button
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
@@ -147,6 +150,9 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		}
 	}
 
+	/**
+	 * Shows save dialog and calls a method that does the rest of saving process
+	 */
 	private void saveBoard(){
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showSaveDialog(this);
@@ -156,7 +162,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	}
 
 	/**
-	 * slider to control simulation speed
+	 * Slider to control simulation speed
 	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
 	 */
 	public void stateChanged(ChangeEvent e) {
@@ -167,6 +173,12 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 			board.setIntensity(intensity.getValue());
 		}
 	}
+
+	/**
+	 * Sets the scale in the board and in statistics
+	 *
+	 * @param scale Scale of the map
+	 */
 
 	public void setScale(double scale){
 		board.setScale(scale);

@@ -3,6 +3,11 @@ package pl.alphabyte.oilSimulator;
 import javax.swing.*;
 import static java.lang.String.format;
 
+/**
+ * This class represents the statistics panel that shows on GUI, right to the board.
+ * All its methods are setters.
+ */
+
 public class Statistics {
     private static final String SCALE_TEXT = "Scale: 1 px = %.2f km^2";
     private static final String DAYS_TEXT = "Days: %d";

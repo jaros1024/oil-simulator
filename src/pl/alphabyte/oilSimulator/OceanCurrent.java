@@ -6,6 +6,9 @@ import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.Vector;
 
+/**
+ * This class represents single ocean current, with factory included.
+ */
 public class OceanCurrent implements Serializable {
     private Vector<java.awt.Point> points = new Vector<java.awt.Point>();
     private boolean finished = false;
@@ -13,6 +16,10 @@ public class OceanCurrent implements Serializable {
     public static final double currRange = 20;
     public static final double currSpeed = 20;
 
+    /**
+     * Draws single ocean current
+     * @param g @see java.awt.Graphics
+     */
     public void draw(Graphics g){
         g.setColor(Color.BLACK);
         int x1, x2, y1, y2;
@@ -38,10 +45,19 @@ public class OceanCurrent implements Serializable {
         return points;
     }
 
+    /**
+     * Adds next point to the current
+     * @param cursorPosition A position of the next point
+     */
     public void addNextPoint(java.awt.Point cursorPosition){
         points.add(cursorPosition);
     }
 
+    /**
+     * Sets the current cursor position, so that the unfinished
+     * current could follow the cursor
+     * @param cursorPosition A position of the cursor
+     */
     public void setCursorPosition(Point cursorPosition) {
         this.cursorPosition = cursorPosition;
     }
@@ -50,6 +66,9 @@ public class OceanCurrent implements Serializable {
         this.finished = true;
     }
 
+    /**
+     * Helper class that manages current creating
+     */
     public static class Factory {
         private OceanCurrent tmpCurrent;
         private Board board;
@@ -58,6 +77,10 @@ public class OceanCurrent implements Serializable {
             this.board = board;
         }
 
+        /**
+         * Starts the process of creating current
+         * @param p A point where the current is starting
+         */
         public void createCurrent(java.awt.Point p){
             tmpCurrent = new OceanCurrent();
             tmpCurrent.addNextPoint(p);
@@ -65,6 +88,10 @@ public class OceanCurrent implements Serializable {
             board.repaint();
         }
 
+        /**
+         * Finishes the current creating process
+         * @return Newly created current
+         */
         public OceanCurrent saveCurrent(){
             tmpCurrent.setFinished();
             applyCurrent();
@@ -75,6 +102,10 @@ public class OceanCurrent implements Serializable {
             return returnValue;
         }
 
+        /**
+         * Handles single mouse click when the current is being created
+         * @param e Mouse event
+         */
         public void handleMouseClick(MouseEvent e){
             if(!isBeingCreated()){
                 createCurrent(e.getPoint());
@@ -84,12 +115,24 @@ public class OceanCurrent implements Serializable {
             }
         }
 
+        /**
+         * Handles mouse move when the current is being created
+         * @param e Mouse event
+         */
         public void handleMouseMove(MouseEvent e){
             setCursorPosition(e.getPoint());
             board.repaint();
         }
+
+        /**
+         * Applies the currently created current
+         */
         public void applyCurrent() { applyCurrent(tmpCurrent);}
 
+        /**
+         * Applies the given current
+         * @param tmpCurrent Ocean current to apply
+         */
         public void applyCurrent(OceanCurrent tmpCurrent){
             Vector<Point> currPoints = tmpCurrent.getPoints();
             double x1,x2,y1,y2;
@@ -135,10 +178,18 @@ public class OceanCurrent implements Serializable {
             }
         }
 
+        /**
+         * Adds next point to the currently created ocean current
+         * @param point A position of the next point
+         */
         public void addNextPoint(java.awt.Point point){
             tmpCurrent.addNextPoint(point);
         }
 
+        /**
+         * Checks if a current is being created
+         * @return true or false
+         */
         public boolean isBeingCreated(){
             return (tmpCurrent != null);
         }
@@ -147,6 +198,11 @@ public class OceanCurrent implements Serializable {
             return tmpCurrent;
         }
 
+        /**
+         * Sets the current cursor position, so that the unfinished
+         * current could follow the cursor
+         * @param position A position of the cursor
+         */
         private void setCursorPosition(java.awt.Point position){
             tmpCurrent.setCursorPosition(position);
         }

@@ -4,9 +4,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
+/**
+ * This class contains useful method, that are used when creating/saving board.
+ */
+
 public class IOHelper {
     public static final int WATER_THRESHOLD = 245;
 
+    /**
+     * Converts buffered image to array of points
+     * @param img An image that should be converted.
+     * @return Array of points
+     */
     public static Point[][] loadPointsFromImage(BufferedImage img){
         Point[][] result = null;
         int imgHeight = img.getHeight();
@@ -34,6 +43,12 @@ public class IOHelper {
         return result;
     }
 
+    /**
+     * Serializes boards and saves it to file.
+     *
+     * @param board A board that should be saved.
+     * @param file Path to destination file.
+     */
     public static void toFile(Board board, String file){
         try {
             FileOutputStream fileOut =
@@ -47,6 +62,12 @@ public class IOHelper {
         }
     }
 
+    /**
+     * Loads board from file.
+     *
+     * @param file A path to source file.
+     * @return Loaded board.
+     */
     public static Board fromFile(String file){
         Board board = null;
         try {

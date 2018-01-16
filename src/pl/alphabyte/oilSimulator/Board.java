@@ -36,10 +36,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	private static final double REAL_PIXEL_SIZE = 2.275;
 	private static final int ITERATIONS_PER_DAY = 8;
 
-	/* LISTA TRYBÓW
-	   0 - DOMYŚLNY, KLIKNIĘCIE MALUJE ROPE
-	   1 - KLIKNIĘCIE POWODUJE ZEZWOLENIE NA RYSOWANIE PRĄDU MORSKIEGO
-	   2 - KLIKNIĘCIE POWODUJE ZEZWOLENIE NA RYSOWANIE WIATRU
+	/* MODE LIST
+	   0 - DEFAULT, SINGLE CLICK IS PAINTING OIL
+	   1 - SINGLE CLICK IS STARTING AN OCEAN CURRENT FACTORY
+	   2 - DRAGGING IS CREATING A WIND
 	*/
 	private static int addingMode = 0;
 
@@ -53,6 +53,9 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		initialize();
 	}
 
+	/**
+	 * Initializes board with points, creates winds and currents, creates the statistics of contamination
+	 */
 	private void initialize() {
 		Point tmp = new Point();
 		points = IOHelper.loadPointsFromImage(inputImage);
@@ -108,7 +111,11 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	public int getYSize(){
 		return points.length;
 	}
-	// single iteration
+
+	/**
+	 * Single iteration of cellular automata
+	 * @param iterNum Iteration number
+	 */
 	public void iteration(int iterNum) {
 		int nonZero = 0;
 		double volume = 0;
@@ -134,7 +141,9 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		stats.setVolume(volume);
 	}
 
-	// clearing board
+	/**
+	 * Clears the board from the oil
+	 */
 	public void clear() {
 		for (int x = 0; x < points.length; ++x)
 			for (int y = 0; y < points[x].length; ++y) {
@@ -145,6 +154,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		this.repaint();
 	}
 
+	/**
+	 * Draws all the points on the board
+	 * @param g @see java.awt.Graphics
+	 */
 	private void drawPoints(Graphics g) {
 		for (int x = 0; x < points.length; ++x) {
 			for (int y = 0; y < points[x].length; ++y) {
@@ -155,24 +168,42 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 
 	}
 
+	/**
+	 * Draws all the currents on the board.
+	 * @param g @see java.awt.Graphics
+	 */
 	private void drawCurrents(Graphics g){
 		for(OceanCurrent oc : currentVector){
 			oc.draw(g);
 		}
 	}
 
+	/**
+	 * Draws all the winds on the board.
+	 * @param g @see java.awt.Graphics
+	 */
 	private void drawWinds(Graphics g){
 		for(Wind w : windVector){
 			w.draw(g);
 		}
 	}
 
+	/**
+	 * Draws all elements of the board.
+	 * @param g @see java.awt.Graphics
+	 */
 	private void drawAll(Graphics g){
 		drawPoints(g);
 		drawCurrents(g);
 		drawWinds(g);
 	}
 
+	/**
+	 * Returns neighborhood of point with given coordinates
+	 * @param x The X coordinate
+	 * @param y The Y coordinate
+	 * @return Array containing the neighborhood
+	 */
 	private Integer[] getNeighborhood(int x, int y){
 		Integer[] result = new Integer[4];
 
@@ -195,6 +226,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		return result;
 	}
 
+	/**
+	 * Marks given neighborhood as clicked
+	 * @param position Array of positions to mark
+	 */
 	private void toggleNeighborhood(Integer[] position){
 		for(int i=position[0]; i<=position[2]; i++){
 			for(int j=position[1]; j<=position[3]; j++){
@@ -205,6 +240,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		this.repaint(0, position[0], position[1], window, window);
 	}
 
+	/**
+	 * Paints the board and elements that are currently being created
+	 * @param g @see java.awt.Graphics
+	 */
 	protected void paintComponent(Graphics g) {
 		if(addingMode == 0) {
 			drawAll(g);
@@ -220,6 +259,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		}
 	}
 
+	/**
+	 * Handles mouse click on the board
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void mouseClicked(MouseEvent e) {
 		System.out.println(intensity);
 		if(addingMode == 0 && e.getX() <= points[0].length && e.getY() <= points.length) {
@@ -235,6 +278,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		}
 	}
 
+	/**
+	 * Handles dragging the mouse through the board
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void mouseDragged(MouseEvent e) {
 		// only adding wind and idle state use mouseDragged event, so we need to consider only these 2 cases
 		if(addingMode == 0) {
@@ -248,6 +295,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		}
 	}
 
+	/**
+	 * Handles the mouse releasing event
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void mouseReleased(MouseEvent e) {
 		if(windFactory.isBeingCreated()) {
 			windVector.add(windFactory.saveWind(e.getPoint()));
@@ -257,6 +308,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		}
 	}
 
+	/**
+	 * Handles the mouse moving event
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void mouseMoved(MouseEvent e) {
 		// only OceanCurrent Factory uses mouseMoved event
 		if(currentFactory.isBeingCreated()){
@@ -282,6 +337,9 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		initialize();
 	}
 
+	/**
+	 * Marks all the points as uncontaminated
+	 */
 	private  void clearContaminated(){
 		for (int x = 0; x < points.length; ++x) {
 			for (int y = 0; y < points[x].length; ++y) {
@@ -290,14 +348,26 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		}
 	}
 
+	/**
+	 * Calculates real pixel size
+	 * @return Real pixel size
+	 */
 	private double getRealPixelSize(){
 		return REAL_PIXEL_SIZE / scale;
 	}
 
+	/**
+	 * Calculates real pixel expanse
+	 * @return Real pixel expanse
+	 */
 	public double getRealPixelExpanse(){
 		return Math.pow(getRealPixelSize(), 2);
 	}
 
+	/**
+	 * Counts contaminated cells
+	 * @return Number of contaminated cells
+	 */
 	private int countContamined(){
 		int result = 0;
 		for(int i = 0; i<contamined.length;i++){
@@ -310,6 +380,10 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 		return result;
 	}
 
+	/**
+	 * Prepares graphics to cache
+	 * @param g @see java.awt.Graphics
+	 */
 	void getCacheImage(Graphics g){
 		drawAll(g);
 	}

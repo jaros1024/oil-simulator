@@ -2,23 +2,27 @@ package pl.alphabyte.oilSimulator;
 
 import java.awt.*;
 
+/**
+ * Represents single point (one cell with 1 px size)
+ */
+
 public class Point {
 
 	public static final Point DEAD_POINT = new Point();
 	private static final Color[] colors = {new Color(0xB6C7FA), new Color(0x027306), new Color(0xff4907)};
-	public static final double MAX_OIL = 10; //
 
 	private Point [] neighbors;
 	private double [] calculationParams;
 
-	private transient static final double EVAPORIZATION = 0.002;
-	private transient static final double MIN_OIL_LEVEL = 0.000001;
+	private static final double EVAPORIZATION = 0.002; // evaporization ratio
+	private static final double MIN_OIL = 0.000001;
+	public static final double MAX_OIL = 10;
 
-	/* parametry kierunkow tablica [4]
-	    0 - w dol
-        1 - prawo
-        2 - w lewo
-        3 - w dol
+	/* directions array [4]
+	    0 - down
+        1 - right
+        2 - left
+        3 - up
     */
 
 	private int neighborsCount;
@@ -59,12 +63,19 @@ public class Point {
 		return oilLevel;
 	}
 
+	/**
+	 * Changes current parameters array
+	 * @param paramChanges Changes of each parameter
+	 */
 	public void modifyCalculationParams(double[] paramChanges){
 	    for (int i = 0; i < calculationParams.length; i++){
 	        calculationParams[i] += paramChanges[i];
         }
     }
 
+	/**
+	 * Calculates new state, basing on type
+	 */
 	public void calculateNewState() {
 		if (type == 1) {
             calculateNewStateOnLand();
@@ -72,9 +83,12 @@ public class Point {
 			calculateNewStateOnWater();
 		}
 		nextOilLevel = nextOilLevel*(1-EVAPORIZATION);
-		if (nextOilLevel < MIN_OIL_LEVEL) nextOilLevel = 0;
+		if (nextOilLevel < MIN_OIL) nextOilLevel = 0;
     }
 
+	/**
+	 * Calculates new state if the point type is water
+	 */
 	public void calculateNewStateOnWater(){
 	    double sum = 0;
 	    double paramSum = 0;
@@ -87,6 +101,9 @@ public class Point {
 
 	}
 
+	/**
+	 * Calculates new state if the point type is land
+	 */
 	public void calculateNewStateOnLand(){
 	    double sum = 0;
 	    int b = 50;
@@ -97,21 +114,34 @@ public class Point {
         nextOilLevel = (b * oilLevel + sum) / (b+4);
     }
 
-
+	/**
+	 * Changes state to newly calculated
+	 */
 	public void changeState() {
 		oilLevel = nextOilLevel;
 	}
-	
+
+	/**
+	 * Adds new neightbor
+	 * @param nei A neighbor to add
+	 */
 	public void addNeighbor(Point nei) {
 		neighbors[neighborsCount] = nei;
 		neighborsCount ++;
 	}
 
-
+	/**
+	 * Gets amount of neighbors
+	 * @return Amount of neighbors
+	 */
 	public int countNeighbors(){
 		return neighborsCount;
 	}
 
+	/**
+	 * Calculates and returns a color of the point
+	 * @return Color
+	 */
 	public Color getColor(){
 		if(oilLevel == 0) {
 			return colors[type];
@@ -131,6 +161,13 @@ public class Point {
 		return Color.getHSBColor(hsb[0], hsb[1], b);
 	}
 
+	/**
+	 * Mixes two colors with given proportions
+	 * @param c1 First color
+	 * @param c2 Second color
+	 * @param p Proportions, where used is p of first color and (1-p) of second color
+	 * @return Mixed color
+	 */
 	private Color getMixedColor(Color c1, Color c2, double p){
 		p = p/MAX_OIL;
 
@@ -141,6 +178,13 @@ public class Point {
 		return new Color(newRed, newGreen, newBlue);
 	}
 
+	/**
+	 * Mixes two double values with given proportions
+	 * @param v1 First value
+	 * @param v2 Second value
+	 * @param p Proportions, where used is p of first value and (1-p) of second value
+	 * @return Mixed value
+	 */
 	private int mixColor(double v1, double v2, double p){
 		Double newValue = (v1 * p) + (v2 * (1-p));
 		return (int)Math.floor(newValue);

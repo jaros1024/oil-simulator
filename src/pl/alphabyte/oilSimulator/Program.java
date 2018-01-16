@@ -4,13 +4,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * The main class that creates all the frames and defines base values
+ */
+
 public class Program extends JFrame {
 
+	/**
+	 * Frame name
+	 */
 	public static final String WINDOW_NAME = "Oil Simulator";
 	private GUI gui;
 	private BufferedImage image;
 	Object lock = new Object();
 
+	/**
+	 * The constructor carries on all the board creating process and uses a lock to block between certain stages
+	 */
 	public Program() {
 		setTitle(WINDOW_NAME);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -56,13 +66,6 @@ public class Program extends JFrame {
 			this.setVisible(false);
 			setContentPane(new Container());
 		}
-
-		/*try {
-			image = ImageIO.read(new File("map.bmp"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
-
 
 		gui = new GUI(this);
 		gui.initialize(this.getContentPane(), serializedBoard);
