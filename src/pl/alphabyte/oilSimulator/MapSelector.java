@@ -10,8 +10,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * This class contains the frame with map selector
+ */
 public class MapSelector {
-    private static final String IMG_FILE = "map2.bmp";
     private static final double ZOOM_CONST = 0.05;
 
     private Program program;
@@ -26,7 +28,6 @@ public class MapSelector {
 
     private BufferedImage fullImage;
     private BufferedImage scaledImage;
-    private BufferedImage trimmedImage;
 
     private double scale;
 
@@ -35,6 +36,9 @@ public class MapSelector {
         this.program = program;
     }
 
+    /**
+     * Initializing of the frame
+     */
     public void initialize(){
         selectButton.addActionListener(new ActionListener() {
             @Override
@@ -46,12 +50,19 @@ public class MapSelector {
             }
         });
 
+        /**
+         * Load image action listener
+         */
         loadImageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 loadFile();
             }
         });
+
+        /**
+         * Zoom in action listener
+         */
         zoomInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -73,6 +84,10 @@ public class MapSelector {
                 }
             }
         });
+
+        /**
+         * Zoom out action listener
+         */
         zoomOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -90,6 +105,9 @@ public class MapSelector {
         });
     }
 
+    /**
+     * Selecting currently visible part of the full map
+     */
     private void selectImage(){
         if(scale == 1){
             scaledImage = fullImage;
@@ -101,6 +119,9 @@ public class MapSelector {
         }
     }
 
+    /**
+     * Loading file with the map
+     */
     private void loadFile(){
         JFileChooser fc = new JFileChooser();
 
@@ -112,6 +133,10 @@ public class MapSelector {
         }
     }
 
+    /**
+     * Reading the map from given file and setting as label icon
+     * @param file File containing the map
+     */
     private void loadImage(File file){
         fullImage = null;
         try {
@@ -125,12 +150,20 @@ public class MapSelector {
         }
     }
 
+    /**
+     * Scaling the image
+     * @param scale Scale of the map
+     */
     private void scaleImage(double scale){
         this.scale = scale;
         int targetSize = (int)Math.round(fullImage.getWidth()*scale);
         scaledImage = Scalr.resize(fullImage, Scalr.Method.AUTOMATIC, targetSize);
     }
 
+    /**
+     * Checks if image is loaded and showing the error
+     * @return
+     */
     private boolean fileLoaded(){
         if(fullImage == null){
             JOptionPane.showMessageDialog(program, "You need to load image file first!", "Error", JOptionPane.ERROR_MESSAGE);

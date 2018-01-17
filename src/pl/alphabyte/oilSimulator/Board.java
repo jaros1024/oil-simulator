@@ -34,7 +34,7 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 
 	private static final int CLICK_RADIUS = 2;
 	private static final double REAL_PIXEL_SIZE = 2.275;
-	private static final int ITERATIONS_PER_DAY = 8;
+	private static final int ITERATIONS_PER_DAY = 9;
 
 	/* MODE LIST
 	   0 - DEFAULT, SINGLE CLICK IS PAINTING OIL
@@ -264,7 +264,6 @@ public class Board extends JComponent implements MouseInputListener, Serializabl
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void mouseClicked(MouseEvent e) {
-		System.out.println(intensity);
 		if(addingMode == 0 && e.getX() <= points[0].length && e.getY() <= points.length) {
 			toggleNeighborhood(getNeighborhood(e.getX(), e.getY()));
 		}

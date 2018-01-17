@@ -3,7 +3,11 @@ package pl.alphabyte.oilSimulator;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
+/**
+ * This class contains an initial window of the program.
+ */
 public class InitialWindow {
     public JPanel panel1;
     private JButton loadBoardFromFileButton;
@@ -16,6 +20,9 @@ public class InitialWindow {
         this.program = program;
     }
 
+    /**
+     * Initializing the frame
+     */
     public void initialize(){
         loadBoardFromFileButton.addActionListener(new ActionListener() {
             @Override
@@ -37,6 +44,9 @@ public class InitialWindow {
         });
     }
 
+    /**
+     * Loading the board from file
+     */
     private void loadBoardFromFile(){
         JFileChooser fc = new JFileChooser();
         int returnVal = fc.showOpenDialog(panel1);

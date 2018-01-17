@@ -14,7 +14,7 @@ public class Point {
 	private Point [] neighbors;
 	private double [] calculationParams;
 
-	private static final double EVAPORIZATION = 0.002; // evaporization ratio
+	private static final double EVAPORIZATION = 0.005; // evaporization ratio
 	private static final double MIN_OIL = 0.000001;
 	public static final double MAX_OIL = 10;
 
